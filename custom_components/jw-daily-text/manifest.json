@@ -1,12 +1,12 @@
 {
-  "domain": "integration_blueprint",
-  "name": "Integration blueprint",
+  "domain": "jw_daily_txt",
+  "name": "JW Daily Text",
   "codeowners": [
     "@ludeeus"
   ],
   "config_flow": true,
-  "documentation": "https://github.com/ludeeus/integration_blueprint",
+  "documentation": "https://github.com/javand/ha-jw-daily-text",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/ludeeus/integration_blueprint/issues",
+  "issue_tracker": "https://github.com/javand/ha-jw-daily-text/issues",
   "version": "0.0.0"
 }

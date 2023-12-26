@@ -2,41 +2,42 @@
 from __future__ import annotations
 
 import asyncio
+import datetime
 import socket
 
 import aiohttp
 import async_timeout
 
 
-class IntegrationBlueprintApiClientError(Exception):
+class JWDailyTextApiClientError(Exception):
     """Exception to indicate a general API error."""
 
 
-class IntegrationBlueprintApiClientCommunicationError(
-    IntegrationBlueprintApiClientError
+class JWDailyTextApiClientCommunicationError(
+    JWDailyTextApiClientError
 ):
     """Exception to indicate a communication error."""
 
 
-class IntegrationBlueprintApiClientAuthenticationError(
-    IntegrationBlueprintApiClientError
+class JWDailyTextApiClientAuthenticationError(
+    JWDailyTextApiClientError
 ):
     """Exception to indicate an authentication error."""
 
 
-class IntegrationBlueprintApiClient:
+class JWDailyTextApiClient:
     """Sample API Client."""
 
     def __init__(
         self,
-        username: str,
-        password: str,
         session: aiohttp.ClientSession,
     ) -> None:
         """Sample API Client."""
-        self._username = username
-        self._password = password
         self._session = session
+        numDate = datetime.datetime.now().strftime("%Y/%m/%d")
+        textPage = 'https://wol.jw.org/en/wol/dt/r1/lp-e/' + str(numDate)
+        html = urllib.request.urlopen(textPage).read().decode()
+        soup = BeautifulSoup(html, 'html.parser')
 
     async def async_get_data(self) -> any:
         """Get data from the API."""
