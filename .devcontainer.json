@@ -1,12 +1,12 @@
 {
-    "name": "ludeeus/integration_blueprint",
+    "name": "ludeeus/ha_jw_daily_text",
     "image": "mcr.microsoft.com/devcontainers/python:3.13",
     "postCreateCommand": "scripts/setup",
     "forwardPorts": [
-        8123
+        8000
     ],
     "portsAttributes": {
-        "8123": {
+        "8000": {
             "label": "Home Assistant",
             "onAutoForward": "notify"
         }
