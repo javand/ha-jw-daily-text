@@ -23,6 +23,19 @@ LANGUAGE_PREFIXES: dict[str, str] = {
     "lp-po": "pt",
 }
 
+LANGUAGE_CODE_MAP: dict[str, str] = {
+    "english": "lp-e",
+    "spanish": "lp-s",
+    "french": "lp-f",
+    "german": "lp-x",
+    "portuguese": "lp-po",
+    "lp-e": "lp-e",
+    "lp-s": "lp-s",
+    "lp-f": "lp-f",
+    "lp-x": "lp-x",
+    "lp-po": "lp-po",
+}
+
 
 class HTMLStripper(HTMLParser):
     """Simple HTML text stripper."""
@@ -101,7 +114,8 @@ class JWTextApiClient:
     ) -> None:
         """Initialize the API client."""
         self._session = session
-        self._language = language
+        clean_lang = language.lower() if isinstance(language, str) else DEFAULT_LANGUAGE
+        self._language = LANGUAGE_CODE_MAP.get(clean_lang, DEFAULT_LANGUAGE)
 
     async def async_get_entry_for_date(self, date_val: datetime.date) -> DailyTextEntry:
         """Fetch and parse daily text for a given date."""

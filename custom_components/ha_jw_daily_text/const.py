@@ -7,10 +7,10 @@ LOGGER = logging.getLogger(__package__)
 
 DEFAULT_LANGUAGE = "lp-e"
 SUPPORTED_LANGUAGES = {
-    "English": "lp-e",
-    "Spanish": "lp-s",
-    "French": "lp-f",
-    "German": "lp-x",
-    "Portuguese": "lp-po",
+    "lp-e": "English",
+    "lp-s": "Spanish",
+    "lp-f": "French",
+    "lp-x": "German",
+    "lp-po": "Portuguese",
 }
 ATTRIBUTION = "Data provided by Watchtower Online Library"
