@@ -1,98 +1,84 @@
-"""Adds config flow for Blueprint."""
+"""Config flow for ha_jw_daily_text."""
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
-from homeassistant.helpers import selector
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.loader import async_get_loaded_integration
-from slugify import slugify
+from homeassistant.core import callback
 
-from .api import (
-    IntegrationBlueprintApiClient,
-    IntegrationBlueprintApiClientAuthenticationError,
-    IntegrationBlueprintApiClientCommunicationError,
-    IntegrationBlueprintApiClientError,
-)
-from .const import DOMAIN, LOGGER
+from .const import DEFAULT_LANGUAGE, DOMAIN, SUPPORTED_LANGUAGES
+
+if TYPE_CHECKING:
+    from homeassistant.data_entry_flow import FlowResult
 
 
-class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
-    """Config flow for Blueprint."""
+class JWTextConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for JW Daily Text."""
 
     VERSION = 1
 
     async def async_step_user(
-        self,
-        user_input: dict | None = None,
-    ) -> config_entries.ConfigFlowResult:
-        """Handle a flow initialized by the user."""
-        _errors = {}
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Handle the initial step."""
         if user_input is not None:
-            try:
-                await self._test_credentials(
-                    username=user_input[CONF_USERNAME],
-                    password=user_input[CONF_PASSWORD],
-                )
-            except IntegrationBlueprintApiClientAuthenticationError as exception:
-                LOGGER.warning(exception)
-                _errors["base"] = "auth"
-            except IntegrationBlueprintApiClientCommunicationError as exception:
-                LOGGER.error(exception)
-                _errors["base"] = "connection"
-            except IntegrationBlueprintApiClientError as exception:
-                LOGGER.exception(exception)
-                _errors["base"] = "unknown"
-            else:
-                await self.async_set_unique_id(
-                    ## Do NOT use this in production code
-                    ## The unique_id should never be something that can change
-                    ## https://developers.home-assistant.io/docs/config_entries_config_flow_handler#unique-ids
-                    unique_id=slugify(user_input[CONF_USERNAME])
-                )
-                self._abort_if_unique_id_configured()
-                return self.async_create_entry(
-                    title=user_input[CONF_USERNAME],
-                    data=user_input,
-                )
+            await self.async_set_unique_id(DOMAIN)
+            self._abort_if_unique_id_configured()
+            return self.async_create_entry(
+                title="JW Daily Text",
+                data=user_input,
+            )
 
-        integration = async_get_loaded_integration(self.hass, DOMAIN)
-        assert integration.documentation is not None, (  # noqa: S101
-            "Integration documentation URL is not set in manifest.json"
+        schema = vol.Schema(
+            {
+                vol.Required("language", default=DEFAULT_LANGUAGE): vol.In(
+                    SUPPORTED_LANGUAGES
+                )
+            }
         )
 
-        return self.async_show_form(
-            step_id="user",
-            description_placeholders={
-                "documentation_url": integration.documentation,
-            },
-            data_schema=vol.Schema(
-                {
-                    vol.Required(
-                        CONF_USERNAME,
-                        default=(user_input or {}).get(CONF_USERNAME, vol.UNDEFINED),
-                    ): selector.TextSelector(
-                        selector.TextSelectorConfig(
-                            type=selector.TextSelectorType.TEXT,
-                        ),
-                    ),
-                    vol.Required(CONF_PASSWORD): selector.TextSelector(
-                        selector.TextSelectorConfig(
-                            type=selector.TextSelectorType.PASSWORD,
-                        ),
-                    ),
-                },
-            ),
-            errors=_errors,
+        return self.async_show_form(step_id="user", data_schema=schema)
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> config_entries.OptionsFlow:
+        """Create the options flow."""
+        return JWTextOptionsFlowHandler(config_entry)
+
+
+class JWTextOptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle options flow for JW Daily Text."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialize options flow."""
+        self.config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Manage options."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        current_lang = self.config_entry.options.get(
+            "language",
+            self.config_entry.data.get("language", DEFAULT_LANGUAGE),
         )
 
-    async def _test_credentials(self, username: str, password: str) -> None:
-        """Validate credentials."""
-        client = IntegrationBlueprintApiClient(
-            username=username,
-            password=password,
-            session=async_get_clientsession(self.hass),
+        schema = vol.Schema(
+            {
+                vol.Required("language", default=current_lang): vol.In(
+                    SUPPORTED_LANGUAGES
+                )
+            }
         )
-        await client.async_get_data()
+
+        return self.async_show_form(step_id="init", data_schema=schema)
+
+
+# Backward compatibility alias
+BlueprintFlowHandler = JWTextConfigFlow

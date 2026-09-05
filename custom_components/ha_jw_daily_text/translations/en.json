@@ -2,20 +2,25 @@
     "config": {
         "step": {
             "user": {
-                "description": "If you need help with the configuration have a look here: {documentation_url}",
+                "title": "JW Daily Text",
+                "description": "Configure JW Daily Text integration settings.",
                 "data": {
-                    "username": "Username",
-                    "password": "Password"
+                    "language": "WOL Language"
                 }
             }
         },
-        "error": {
-            "auth": "Username/Password is wrong.",
-            "connection": "Unable to connect to the server.",
-            "unknown": "Unknown error occurred."
-        },
         "abort": {
-            "already_configured": "This entry is already configured."
+            "already_configured": "JW Daily Text is already configured."
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "JW Daily Text Options",
+                "data": {
+                    "language": "WOL Language"
+                }
+            }
         }
     }
 }
