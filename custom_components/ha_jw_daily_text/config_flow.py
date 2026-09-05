@@ -8,6 +8,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 
+from .api import LANGUAGE_CODE_MAP
 from .const import DEFAULT_LANGUAGE, DOMAIN, SUPPORTED_LANGUAGES
 
 if TYPE_CHECKING:
@@ -64,9 +65,14 @@ class JWTextOptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
-        current_lang = self.config_entry.options.get(
+        raw_lang = self.config_entry.options.get(
             "language",
             self.config_entry.data.get("language", DEFAULT_LANGUAGE),
+        )
+        current_lang = (
+            LANGUAGE_CODE_MAP.get(raw_lang.lower(), DEFAULT_LANGUAGE)
+            if isinstance(raw_lang, str)
+            else DEFAULT_LANGUAGE
         )
 
         schema = vol.Schema(

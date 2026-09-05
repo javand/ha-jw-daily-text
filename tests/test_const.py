@@ -17,11 +17,11 @@ def test_constants() -> None:
     assert DOMAIN == "ha_jw_daily_text"
     assert DEFAULT_LANGUAGE == "lp-e"
     assert SUPPORTED_LANGUAGES == {
-        "English": "lp-e",
-        "Spanish": "lp-s",
-        "French": "lp-f",
-        "German": "lp-x",
-        "Portuguese": "lp-po",
+        "lp-e": "English",
+        "lp-s": "Spanish",
+        "lp-f": "French",
+        "lp-x": "German",
+        "lp-po": "Portuguese",
     }
     assert LOGGER.name == "custom_components.ha_jw_daily_text"
 

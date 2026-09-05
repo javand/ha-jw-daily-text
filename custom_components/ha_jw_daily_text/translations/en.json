@@ -5,7 +5,7 @@
                 "title": "JW Daily Text",
                 "description": "Configure JW Daily Text integration settings.",
                 "data": {
-                    "language": "WOL Language"
+                    "language": "Language"
                 }
             }
         },
@@ -18,7 +18,7 @@
             "init": {
                 "title": "JW Daily Text Options",
                 "data": {
-                    "language": "WOL Language"
+                    "language": "Language"
                 }
             }
         }

@@ -175,7 +175,7 @@ def test_translations_en_structure() -> None:
     assert user_step["title"] == "JW Daily Text"
     assert "description" in user_step
     assert "documentation_url" not in user_step["description"]
-    assert user_step["data"]["language"] == "WOL Language"
+    assert user_step["data"]["language"] == "Language"
 
     # Abort
     assert "abort" in data["config"]
@@ -187,4 +187,4 @@ def test_translations_en_structure() -> None:
     assert "init" in data["options"]["step"]
     init_step = data["options"]["step"]["init"]
     assert init_step["title"] == "JW Daily Text Options"
-    assert init_step["data"]["language"] == "WOL Language"
+    assert init_step["data"]["language"] == "Language"

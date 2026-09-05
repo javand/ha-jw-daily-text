@@ -153,6 +153,17 @@ def test_api_client_languages() -> None:
     call_url_es = mock_session.request.call_args[1]["url"]
     assert call_url_es == "https://wol.jw.org/es/wol/dt/r1/lp-s/2026/09/04"
 
+    # Test friendly language names resolve to valid lp- codes
+    client_english = JWTextApiClient(session=mock_session, language="English")
+    asyncio.run(client_english.async_get_entry_for_date(datetime.date(2026, 9, 4)))
+    call_url_en = mock_session.request.call_args[1]["url"]
+    assert call_url_en == "https://wol.jw.org/en/wol/dt/r1/lp-e/2026/09/04"
+
+    client_spanish = JWTextApiClient(session=mock_session, language="Spanish")
+    asyncio.run(client_spanish.async_get_entry_for_date(datetime.date(2026, 9, 4)))
+    call_url_spanish = mock_session.request.call_args[1]["url"]
+    assert call_url_spanish == "https://wol.jw.org/es/wol/dt/r1/lp-s/2026/09/04"
+
     client_fr = JWTextApiClient(session=mock_session, language="lp-f")
     asyncio.run(client_fr.async_get_entry_for_date(datetime.date(2026, 9, 4)))
     call_url_fr = mock_session.request.call_args[1]["url"]
