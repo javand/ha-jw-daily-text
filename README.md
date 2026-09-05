@@ -1,4 +1,4 @@
-# JW Daily Text for Home Assistant
+# <img src="custom_components/ha_jw_daily_text/icon.png" width="48" height="48" align="center" alt="JW Daily Text Icon"> JW Daily Text for Home Assistant
 
 [![GitHub Release](https://img.shields.io/github/release/javand/ha-jw-daily-text.svg?style=popout-square)](https://github.com/javand/ha-jw-daily-text/releases)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=popout-square)](https://github.com/hacs/integration)
