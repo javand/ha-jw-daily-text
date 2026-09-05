@@ -2,6 +2,7 @@
 
 [![GitHub Release](https://img.shields.io/github/release/javand/ha-jw-daily-text.svg?style=popout-square)](https://github.com/javand/ha-jw-daily-text/releases)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=popout-square)](https://github.com/hacs/integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=javand&repository=ha-jw-daily-text&category=integration)
 
 A Home Assistant custom integration that fetches the daily scripture text and commentary from the Watchtower Online Library (WOL). It exposes dedicated sensor entities for **Today**, **Yesterday**, and **Tomorrow**, specially designed for voice automations (Text-to-Speech) and Home Assistant dashboards.
 
@@ -53,7 +54,9 @@ To comply with Home Assistant's 255-character state limit, the entity `state` is
 
 ### Method 1: HACS (Recommended)
 
-1. Open **HACS** in Home Assistant.
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=javand&repository=ha-jw-daily-text&category=integration)
+
+1. Click the **Open your Home Assistant instance** badge above or open **HACS** manually in Home Assistant.
 2. Click the three dots in the top-right corner and select **Custom repositories**.
 3. Add repository URL: `https://github.com/javand/ha-jw-daily-text` with Category **Integration**.
 4. Click **Download**.
