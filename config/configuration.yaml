@@ -9,4 +9,4 @@ homeassistant:
 logger:
   default: info
   logs:
-    custom_components.ha_jw_daily_text: debug
+    custom_components.integration_blueprint: debug
