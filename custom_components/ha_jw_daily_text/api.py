@@ -161,7 +161,9 @@ class JWTextApiClient:
         # Find theme scripture paragraph (<p class="themeScrp">)
         scripture_text = ""
         scripture_citation = ""
-        theme_match = re.search(r'<p class="themeScrp"[^>]*>(.*?)</p>', html, re.DOTALL)
+        theme_match = re.search(
+            r'<p[^>]*class="[^"]*themeScrp[^"]*"[^>]*>(.*?)</p>', html, re.DOTALL
+        )
         if theme_match:
             raw_theme = strip_html(theme_match.group(1))
             parts: list[str] = []
@@ -183,7 +185,7 @@ class JWTextApiClient:
         # Find commentary body (<div class="bodyTxt">)
         comments = ""
         body_match = re.search(
-            r'<div class="bodyTxt"[^>]*>(.*?)</div>', html, re.DOTALL
+            r'<div[^>]*class="[^"]*bodyTxt[^"]*"[^>]*>(.*?)</div>', html, re.DOTALL
         )
         if body_match:
             raw_body = strip_html(body_match.group(1))
