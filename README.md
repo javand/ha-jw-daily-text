@@ -1,60 +1,103 @@
-# Notice
+# <img src="custom_components/ha_jw_daily_text/icon.png" width="48" height="48" align="center" alt="JW Daily Text Icon"> JW Daily Text for Home Assistant
 
-The component and platforms in this repository are not meant to be used by a
-user, but as a "blueprint" that custom component developers can build
-upon, to make more awesome stuff.
+[![GitHub Release](https://img.shields.io/github/release/javand/ha-jw-daily-text.svg?style=popout-square)](https://github.com/javand/ha-jw-daily-text/releases)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=popout-square)](https://github.com/hacs/integration)
 
-HAVE FUN! 😎
+A Home Assistant custom integration that fetches the daily scripture text and commentary from the Watchtower Online Library (WOL). It exposes dedicated sensor entities for **Today**, **Yesterday**, and **Tomorrow**, specially designed for voice automations (Text-to-Speech) and Home Assistant dashboards.
 
-## Why?
+---
 
-This is simple, by having custom_components look (README + structure) the same
-it is easier for developers to help each other and for users to start using them.
+## Features
 
-If you are a developer and you want to add things to this "blueprint" that you think more
-developers will have use for, please open a PR to add it :)
+- 📖 **6 Dedicated Sensor Entities**: Separate sensors for scripture text and commentary for **Today**, **Yesterday**, and **Tomorrow**.
+- 🔊 **Text-to-Speech (TTS) Ready**: Full, untruncated scripture and commentary text stored in entity attributes (`text`) to bypass Home Assistant's 255-character state limit.
+- ⏰ **Local Midnight Refresh**: Automatically updates at local midnight (in your Home Assistant system timezone) with automatic network retry backoff.
+- 🗣️ **Bible Abbreviation Expansion**: Automatically expands abbreviated Bible citations (e.g. `Prov. 3:32` $\rightarrow$ `Proverbs 3:32`, `1 Cor. 13:4` $\rightarrow$ `1 Corinthians 13:4`) for natural TTS pronunciation.
+- 🌍 **Multi-Language Support**: Configurable WOL locale (English, Spanish, French, German, Portuguese, etc.).
 
-## What?
+---
 
-This repository contains multiple files, here is a overview:
+## Entities & Attributes
 
-File | Purpose | Documentation
--- | -- | --
-`.devcontainer.json` | Used for development/testing with Visual Studio Code. | [Documentation](https://code.visualstudio.com/docs/remote/containers)
-`.github/renovate.json` | Dependency update configuration for Renovate (enabled by default). | [Documentation](https://docs.renovatebot.com/configuration-options/)
-`.github/_dependabot.yml` | Dependency update configuration for Dependabot (disabled, see "Dependency updates" below). | [Documentation](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file)
-`.github/ISSUE_TEMPLATE/*.yml` | Templates for the issue tracker | [Documentation](https://help.github.com/en/github/building-a-strong-community/configuring-issue-templates-for-your-repository)
-`custom_components/integration_blueprint/*` | Integration files, this is where everything happens. | [Documentation](https://developers.home-assistant.io/docs/creating_component_index)
-`CONTRIBUTING.md` | Guidelines on how to contribute. | [Documentation](https://help.github.com/en/github/building-a-strong-community/setting-guidelines-for-repository-contributors)
-`LICENSE` | The license file for the project. | [Documentation](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/licensing-a-repository)
-`README.md` | The file you are reading now, should contain info about the integration, installation and configuration instructions. | [Documentation](https://help.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax)
-`requirements_dev.txt` | Python packages used for development/testing this integration (also installs lint tooling via `requirements_lint.txt`). | [Documentation](https://pip.pypa.io/en/stable/user_guide/#requirements-files)
-`requirements_lint.txt` | Python packages used to lint this integration (installed by the Lint CI job). | [Documentation](https://pip.pypa.io/en/stable/user_guide/#requirements-files)
-`requirements_common.txt` | Python packages common to CI and local dev, installed first so any pip upgrade completes before other dependencies (e.g. a modern pip). | [Documentation](https://pip.pypa.io/en/stable/user_guide/#requirements-files)
+The integration creates the following 6 sensor entities:
 
-## Dependency updates
+| Entity ID | Name | Description |
+| :--- | :--- | :--- |
+| `sensor.jw_daily_text_today` | JW Daily Text Today | Today's scripture text |
+| `sensor.jw_daily_text_today_comment` | JW Daily Text Today Comment | Today's commentary |
+| `sensor.jw_daily_text_yesterday` | JW Daily Text Yesterday | Yesterday's scripture text |
+| `sensor.jw_daily_text_yesterday_comment` | JW Daily Text Yesterday Comment | Yesterday's commentary |
+| `sensor.jw_daily_text_tomorrow` | JW Daily Text Tomorrow | Tomorrow's scripture text |
+| `sensor.jw_daily_text_tomorrow_comment` | JW Daily Text Tomorrow Comment | Tomorrow's commentary |
 
-This template ships with configuration for **two** dependency update tools. Pick
-**one** and remove or disable the other:
+### Entity Attributes
 
-- **Renovate** (`.github/renovate.json`) is enabled by default.
-- **Dependabot** (`.github/_dependabot.yml`) is included but disabled — the `_`
-  prefix means GitHub ignores it. To use Dependabot instead, rename the file
-  back to `.github/dependabot.yml` and delete `.github/renovate.json`.
+To comply with Home Assistant's 255-character state limit, the entity `state` is truncated with `…` if long. The **full untruncated text** for TTS is available in `extra_state_attributes`:
 
-## How?
+#### Scripture Sensors (`today`, `yesterday`, `tomorrow`)
+* **`state`**: Scripture text (truncated to 255 chars for UI display).
+* **`text`**: Full untruncated scripture verse text (for TTS).
+* **`scripture`**: Expanded Bible citation (e.g. `"Proverbs 3:32"`).
+* **`day_and_date`**: Formatted date header (e.g. `"Friday, September 4"`).
+* **`date`**: ISO date (`YYYY-MM-DD`).
 
-1. Create a new repository in GitHub, using this repository as a template by clicking the "Use this template" button in the GitHub UI.
-1. Open your new repository in Visual Studio Code devcontainer (Preferably with the "`Dev Containers: Clone Repository in Named Container Volume...`" option).
-1. Rename all instances of the `integration_blueprint` to `custom_components/<your_integration_domain>` (e.g. `custom_components/awesome_integration`).
-1. Rename all instances of the `Integration Blueprint` to `<Your Integration Name>` (e.g. `Awesome Integration`).
-1. Run the `scripts/develop` to start HA and test out your new integration.
+#### Comment Sensors (`today_comment`, `yesterday_comment`, `tomorrow_comment`)
+* **`state`**: Commentary text (truncated to 255 chars for UI display).
+* **`text`**: Full untruncated commentary text (for TTS).
+* **`day_and_date`**: Formatted date header (e.g. `"Friday, September 4"`).
+* **`date`**: ISO date (`YYYY-MM-DD`).
 
-## Next steps
+---
 
-These are some next steps you may want to look into:
-- Add tests to your integration, [`pytest-homeassistant-custom-component`](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component) can help you get started.
-- Add brand images (logo/icon).
-- Create your first release.
-- Share your integration on the [Home Assistant Forum](https://community.home-assistant.io/).
-- Submit your integration to [HACS](https://hacs.xyz/docs/publish/start).
+## Installation
+
+### Method 1: HACS (Recommended)
+
+1. Open **HACS** in Home Assistant.
+2. Click the three dots in the top-right corner and select **Custom repositories**.
+3. Add repository URL: `https://github.com/javand/ha-jw-daily-text` with Category **Integration**.
+4. Click **Download**.
+5. Restart Home Assistant.
+
+### Method 2: Manual Installation
+
+1. Download the latest release `.zip` or clone this repository.
+2. Copy the `custom_components/ha_jw_daily_text` folder into your Home Assistant `<config>/custom_components/` directory.
+3. Restart Home Assistant.
+
+---
+
+## Configuration
+
+1. In Home Assistant, navigate to **Settings** $\rightarrow$ **Devices & Services**.
+2. Click **Add Integration**.
+3. Search for **JW Daily Text**.
+4. Select your preferred WOL language (default: `English`) and submit.
+
+To change the language at any time, click **Configure** on the integration card.
+
+---
+
+## Automation Example (Text-to-Speech)
+
+Here is an example Home Assistant automation that reads the daily text aloud every morning:
+
+```yaml
+alias: Read JW Daily Text Morning
+trigger:
+  - trigger: time
+    at: "08:00:00"
+action:
+  - action: tts.speak
+    target:
+      entity_id: tts.google_en_com
+    data:
+      media_player_entity_id: media_player.living_room_speaker
+      message: >
+        Daily Text for {{ state_attr('sensor.jw_daily_text_today', 'day_and_date') }}.
+        {{ state_attr('sensor.jw_daily_text_today', 'text') }}
+        {{ state_attr('sensor.jw_daily_text_today', 'scripture') }}.
+
+        Commentary:
+        {{ state_attr('sensor.jw_daily_text_today_comment', 'text') }}
+```
