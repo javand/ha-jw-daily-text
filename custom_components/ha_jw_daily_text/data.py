@@ -1,4 +1,4 @@
-"""Custom types for integration_blueprint."""
+"""Custom types for ha_jw_daily_text."""
 
 from __future__ import annotations
 
@@ -9,17 +9,18 @@ if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.loader import Integration
 
-    from .api import IntegrationBlueprintApiClient
-    from .coordinator import BlueprintDataUpdateCoordinator
+    from .api import JWTextApiClient
+    from .coordinator import JWDailyTextCoordinator
 
 
 type IntegrationBlueprintConfigEntry = ConfigEntry[IntegrationBlueprintData]
+type JWDailyTextConfigEntry = ConfigEntry[IntegrationBlueprintData]
 
 
 @dataclass
 class IntegrationBlueprintData:
-    """Data for the Blueprint integration."""
+    """Data for the JW Daily Text integration."""
 
-    client: IntegrationBlueprintApiClient
-    coordinator: BlueprintDataUpdateCoordinator
-    integration: Integration
+    client: JWTextApiClient
+    coordinator: JWDailyTextCoordinator
+    integration: Integration | None = None
