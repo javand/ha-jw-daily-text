@@ -1,0 +1,26 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "JW Daily Text",
+                "description": "Configure JW Daily Text integration settings.",
+                "data": {
+                    "language": "Language"
+                }
+            }
+        },
+        "abort": {
+            "already_configured": "JW Daily Text is already configured."
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "JW Daily Text Options",
+                "data": {
+                    "language": "Language"
+                }
+            }
+        }
+    }
+}
