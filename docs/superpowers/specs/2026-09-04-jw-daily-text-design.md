@@ -49,7 +49,7 @@
 
 ---
 
-## 2. Data Fetching & HTML Parsing (`api.py`)
+## 2. Data Fetching, HTML Parsing & Citation Expansion (`api.py`, `bible_books.py`)
 
 ### WOL URL Format
 Direct date URL pattern:
@@ -59,7 +59,7 @@ Direct date URL pattern:
 1. **`day_and_date`**: Extracted from header/date text (e.g. `"Friday, September 4"`).
 2. **`scripture_text`**: Extracted from primary verse block (`<p class="themeScrp">`). Strips HTML markup, superscripts, and footnote links.
 3. **`scripture`**: Extracted from verse citation following dash (`—` or `-`).
-   - Abbreviated book names are expanded to full proper names using a built-in Bible book dictionary (e.g. `Prov. 3:32` $\rightarrow$ `"Proverbs 3:32"`, `Gen. 18:25` $\rightarrow$ `"Genesis 18:25"`, `1 Cor. 13:4` $\rightarrow$ `"1 Corinthians 13:4"`).
+   - Abbreviated book names are expanded to full proper names via `bible_books.py` using the `BIBLE_BOOKS` dictionary and `expand_bible_citation` (e.g. `Prov. 3:32` $\rightarrow$ `"Proverbs 3:32"`, `Gen. 18:25` $\rightarrow$ `"Genesis 18:25"`, `1 Cor. 13:4` $\rightarrow$ `"1 Corinthians 13:4"`).
 4. **`comments`**: Extracted from commentary block (`<div class="bodyTxt">`). Normalizes whitespace and strips trailing publication references.
 
 ### Data Model
