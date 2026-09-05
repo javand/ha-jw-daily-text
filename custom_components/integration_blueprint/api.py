@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
+import math
 import socket
+from contextlib import suppress
+from http import HTTPStatus
 from typing import Any
 
 import aiohttp
-import async_timeout
 
 
 class IntegrationBlueprintApiClientError(Exception):
@@ -25,12 +28,41 @@ class IntegrationBlueprintApiClientAuthenticationError(
     """Exception to indicate an authentication error."""
 
 
+class IntegrationBlueprintApiClientRateLimitError(
+    IntegrationBlueprintApiClientCommunicationError,
+):
+    """Exception to indicate the API is rate limiting us."""
+
+    def __init__(self, message: str, retry_after: int | None = None) -> None:
+        """Store the backoff period requested by the API."""
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
+def _parse_retry_after(response: aiohttp.ClientResponse) -> int:
+    """Return the backoff period (whole seconds) from the Retry-After header."""
+    value: float | None = None
+    retry_after = response.headers.get("Retry-After")
+    if retry_after is not None:
+        with suppress(ValueError):
+            value = float(retry_after)
+    if value is not None and math.isfinite(value) and value >= 0:
+        return math.ceil(value)
+    return 60
+
+
 def _verify_response_or_raise(response: aiohttp.ClientResponse) -> None:
     """Verify that the response is valid."""
     if response.status in (401, 403):
         msg = "Invalid credentials"
         raise IntegrationBlueprintApiClientAuthenticationError(
             msg,
+        )
+    if response.status == HTTPStatus.TOO_MANY_REQUESTS:
+        msg = "Rate limited by the API"
+        raise IntegrationBlueprintApiClientRateLimitError(
+            msg,
+            retry_after=_parse_retry_after(response),
         )
     response.raise_for_status()
 
@@ -74,7 +106,7 @@ class IntegrationBlueprintApiClient:
     ) -> Any:
         """Get information from the API."""
         try:
-            async with async_timeout.timeout(10):
+            async with asyncio.timeout(10):
                 response = await self._session.request(
                     method=method,
                     url=url,
@@ -94,6 +126,11 @@ class IntegrationBlueprintApiClient:
             raise IntegrationBlueprintApiClientCommunicationError(
                 msg,
             ) from exception
+        except IntegrationBlueprintApiClientError:
+            # Our own typed errors (auth, rate-limit, communication) are already
+            # meaningful; re-raise so callers can branch on them instead of masking
+            # them with the broad handler below.
+            raise
         except Exception as exception:  # pylint: disable=broad-except
             msg = f"Something really wrong happened! - {exception}"
             raise IntegrationBlueprintApiClientError(
