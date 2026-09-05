@@ -1,8 +1,16 @@
-"""Constants for integration_blueprint."""
+"""Constants for ha_jw_daily_text."""
 
-from logging import Logger, getLogger
+import logging
 
-LOGGER: Logger = getLogger(__package__)
+DOMAIN = "ha_jw_daily_text"
+LOGGER = logging.getLogger(__package__)
 
-DOMAIN = "integration_blueprint"
-ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
+DEFAULT_LANGUAGE = "lp-e"
+SUPPORTED_LANGUAGES = {
+    "English": "lp-e",
+    "Spanish": "lp-s",
+    "French": "lp-f",
+    "German": "lp-x",
+    "Portuguese": "lp-po",
+}
+ATTRIBUTION = "Data provided by Watchtower Online Library"
