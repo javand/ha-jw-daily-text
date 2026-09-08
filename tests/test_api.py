@@ -76,7 +76,6 @@ def test_api_client_parse_removes_commentary_scriptures() -> None:
     assert entry.comments == expected_comment
 
 
-
 def test_api_client_parse() -> None:
     """Test parsing daily text HTML into DailyTextEntry."""
     sample_html = (

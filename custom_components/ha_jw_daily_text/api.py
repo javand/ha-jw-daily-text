@@ -54,6 +54,7 @@ def clean_commentary_scriptures(text: str) -> str:
     text = re.sub(r"\s+", " ", text)
     return text.strip()
 
+
 LANGUAGE_PREFIXES: dict[str, str] = {
     "lp-e": "en",
     "lp-s": "es",
