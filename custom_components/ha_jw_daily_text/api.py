@@ -12,8 +12,47 @@ from http import HTTPStatus
 
 import aiohttp
 
-from .bible_books import expand_bible_citation
+from .bible_books import BIBLE_BOOKS, expand_bible_citation
 from .const import DEFAULT_LANGUAGE
+
+
+def clean_commentary_scriptures(text: str) -> str:
+    """Remove inline scripture citations from commentary text."""
+    if not text:
+        return text
+
+    books = sorted(
+        list(BIBLE_BOOKS.keys()) + list(set(BIBLE_BOOKS.values())),
+        key=len,
+        reverse=True,
+    )
+    books_pattern = "|".join(re.escape(b) for b in books)
+    dash_range = r"[\u2013-]"
+    sub_cite = r"(?:(?:" + books_pattern + r")\s+)?\d+:\d+(?:" + dash_range + r"\d+)?"
+    citation_regex = (
+        r"(?:" + books_pattern + r")\s+\d+:\d+(?:" + dash_range + r"\d+)?"
+        r"(?:,\s*\d+)*(?:\s*;\s*" + sub_cite + r"(?:,\s*\d+)*)*"
+    )
+
+    # Remove parenthetical citations like (2 Ki. 5:14) or (Read 2 Kings 5:14)
+    paren_regex = r"\s*\(\s*(?:[Rr]ead\s+)?(?:" + citation_regex + r")\.?\s*\)"
+    text = re.sub(paren_regex, "", text)
+
+    # Remove citations enclosed in commas: ', 2 Ki. 5:14,' -> ','
+    comma_regex = r",\s*(?:" + citation_regex + r")\s*,"
+    text = re.sub(comma_regex, ",", text)
+
+    # Remove trailing citation after quote/word before punctuation/whitespace
+    text = re.sub(
+        r"([\"'\w]),\s*(?:" + citation_regex + r")\s*(,|\.|\s)",
+        r"\1\2",
+        text,
+    )
+
+    # Clean up double commas and spaces
+    text = re.sub(r",\s*,", ",", text)
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
 
 LANGUAGE_PREFIXES: dict[str, str] = {
     "lp-e": "en",
@@ -190,9 +229,10 @@ class JWTextApiClient:
         if body_match:
             raw_body = strip_html(body_match.group(1))
             # Strip trailing publication reference (e.g. w24.06 10 ¶7)
-            comments = re.sub(
+            raw_comments = re.sub(
                 r"\s*w\d{2}(?:\.\d{2})?.*$", "", raw_body, flags=re.DOTALL
             ).strip()
+            comments = clean_commentary_scriptures(raw_comments)
 
         return DailyTextEntry(
             date=date_str,
