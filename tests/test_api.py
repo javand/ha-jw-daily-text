@@ -32,9 +32,48 @@ def test_expand_bible_citation() -> None:
     assert expand_bible_citation("Song of Sol. 2:1") == "Song of Solomon 2:1"
     assert expand_bible_citation("1 Chron. 29:11") == "1 Chronicles 29:11"
     assert expand_bible_citation("Rev. 21:4") == "Revelation 21:4"
+    assert expand_bible_citation("2 Ki. 5:14") == "2 Kings 5:14"
+    assert expand_bible_citation("2 Ki 5:14") == "2 Kings 5:14"
+    assert expand_bible_citation("1 Ki. 18:21") == "1 Kings 18:21"
+    assert expand_bible_citation("1 Ki 18:21") == "1 Kings 18:21"
+    assert expand_bible_citation("1 Kgs. 18:21") == "1 Kings 18:21"
+    assert expand_bible_citation("2 Kgs. 5:14") == "2 Kings 5:14"
+    assert expand_bible_citation("1 Chr. 29:11") == "1 Chronicles 29:11"
+    assert expand_bible_citation("2 Chr. 7:14") == "2 Chronicles 7:14"
+    assert expand_bible_citation("1 Chr 29:11") == "1 Chronicles 29:11"
+    assert expand_bible_citation("2 Chr 7:14") == "2 Chronicles 7:14"
     assert expand_bible_citation("Prov. 3:32.") == "Proverbs 3:32"
     assert expand_bible_citation("UnknownBook 1:1") == "UnknownBook 1:1"
     assert expand_bible_citation("\u200bProv. 3:32 ") == "Proverbs 3:32"
+
+
+def test_api_client_parse_removes_commentary_scriptures() -> None:
+    """Test commentary parsing removes scripture citations in commas and parentheses."""
+    sample_html = (
+        "<article>\n"
+        "    <h2>Friday, September 4</h2>\n"
+        '    <p class="themeScrp">Jehovah detests a person.'
+        "\u200b\u20142 Ki. 5:14.</p>\n"
+        '    <div class="bodyTxt"><p>'
+        "Naaman obeyed the prophet, 2 Ki. 5:14, and was healed. "
+        "We can learn (Read 2 Kings 5:14) about obedience."
+        "</p></div>\n"
+        "</article>"
+    )
+    mock_session = AsyncMock(spec=aiohttp.ClientSession)
+    mock_response = AsyncMock()
+    mock_response.status = 200
+    mock_response.text.return_value = sample_html
+    mock_session.request.return_value.__aenter__.return_value = mock_response
+
+    client = JWTextApiClient(session=mock_session, language="lp-e")
+    entry = asyncio.run(client.async_get_entry_for_date(datetime.date(2026, 9, 4)))
+
+    assert entry.scripture == "2 Kings 5:14"
+    expected_comment = (
+        "Naaman obeyed the prophet, and was healed. We can learn about obedience."
+    )
+    assert entry.comments == expected_comment
 
 
 def test_api_client_parse() -> None:
